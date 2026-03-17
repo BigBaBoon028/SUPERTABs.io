@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SUPERTABs - The Ultimate N-Panel Controller for Blender</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #00d4aa;
+      --primary-dark: #00a884;
+      --primary-light: #00ffc8;
+      --bg-dark: #080810;
+      --bg-dark-2: #0a0a12;
+      --bg-dark-3: #0d0d18;
+      --bg-card: rgba(20, 20, 30, 0.6);
+      --text-main: #e8e8ec;
+      --text-muted: #8888a0;
+      --accent-purple: #8b5cf6;
+      --accent-blue: #3b82f6;
+      --accent-pink: #ec4899;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Geometric Background */
+    .bg-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(0, 212, 170, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+        linear-gradient(180deg, #080810 0%, #0a0a15 50%, #080810 100%);
+    }
+
+    .bg-grid {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(60px, 60px); }
+    }
+
+    .bg-shapes {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .shape {
+      position: absolute;
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      border-radius: 50%;
+      animation: float 15s ease-in-out infinite;
+    }
+
+    .shape-1 {
+      width: 400px;
+      height: 400px;
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+
+    .shape-2 {
+      width: 300px;
+      height: 300px;
+      bottom: 10%;
+      right: -50px;
+      animation-delay: -5s;
+      border-color: rgba(139, 92, 246, 0.2);
+    }
+
+    .shape-3 {
+      width: 200px;
+      height: 200px;
+      top: 40%;
+      left: 10%;
+      animation-delay: -10s;
+      border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .shape-4 {
+      width: 150px;
+      height: 150px;
+      bottom: 20%;
+      left: 20%;
+      animation-delay: -7s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+      50% { transform: translateY(-30px) rotate(180deg); opacity: 0.8; }
+    }
+
+    .bg-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.3;
+      animation: glowPulse 8s ease-in-out infinite;
+    }
+
+    .glow-1 {
+      background: var(--primary);
+      top: -200px;
+      right: -100px;
+    }
+
+    .glow-2 {
+      background: var(--accent-purple);
+      bottom: -200px;
+      left: -100px;
+      animation-delay: -4s;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.1); }
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 80px 0 60px;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(0, 212, 170, 0.3) 0%, transparent 70%);
+      filter: blur(40px);
+      z-index: -1;
+    }
+
+    .logo {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--primary-dark) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 5em;
+      font-weight: 900;
+      letter-spacing: -3px;
+      margin-bottom: 15px;
+      text-shadow: 0 0 60px rgba(0, 212, 170, 0.5);
+    }
+
+    .tagline {
+      font-size: 2.2em;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+
+    .version-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--bg-dark);
+      padding: 12px 30px;
+      border-radius: 50px;
+      font-size: 1.2em;
+      font-weight: 700;
+      margin-top: 20px;
+      box-shadow: 0 10px 40px rgba(0, 212, 170, 0.4);
+      animation: badgePulse 3s ease-in-out infinite;
+    }
+
+    @keyframes badgePulse {
+      0%, 100% { box-shadow: 0 10px 40px rgba(0, 212, 170, 0.4); }
+      50% { box-shadow: 0 10px 60px rgba(0, 212, 170, 0.6); }
+    }
+
+    .hero-desc {
+      max-width: 800px;
+      margin: 40px auto 0;
+      font-size: 1.35em;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    .hero-subdesc {
+      max-width: 700px;
+      margin: 25px auto 0;
+      font-size: 1.2em;
+      color: var(--primary);
+      line-height: 1.7;
+      font-weight: 500;
+    }
+
+    .cta-wrapper {
+      margin-top: 40px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--bg-dark);
+      padding: 20px 60px;
+      border-radius: 60px;
+      font-size: 1.4em;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 15px 50px rgba(0, 212, 170, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 25px 70px rgba(0, 212, 170, 0.5);
+    }
+
+    .cta-button:hover::before {
+      left: 100%;
+    }
+
+    .price-tag {
+      display: block;
+      margin-top: 20px;
+      font-size: 1.6em;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* Divider */
+    .divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      margin: 60px 0;
+      border: none;
+      position: relative;
+    }
+
+    .divider::after {
+      content: '✦';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--primary);
+      font-size: 1.2em;
+      background: var(--bg-dark);
+      padding: 0 20px;
+    }
+
+    /* Video Section */
+    .video-section {
+      margin: 60px 0;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 212, 170, 0.3);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .video-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.5), transparent, rgba(139, 92, 246, 0.3));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .video-section img {
+      width: 100%;
+      display: block;
+    }
+
+    /* Section Title */
+    .section-title {
+      text-align: center;
+      font-size: 2.8em;
+      color: #ffffff;
+      margin: 80px 0 40px;
+      font-weight: 700;
+      position: relative;
+    }
+
+    .section-title span {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Comparison */
+    .comparison {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      margin: 40px 0;
+    }
+
+    .comparison-box {
+      flex: 1 1 400px;
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 35px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .comparison-box:hover {
+      transform: translateY(-5px);
+      border-color: rgba(0, 212, 170, 0.3);
+    }
+
+    .comparison-box.without {
+      border-color: rgba(255, 80, 80, 0.2);
+    }
+
+    .comparison-box.without:hover {
+      border-color: rgba(255, 80, 80, 0.4);
+    }
+
+    .comparison-box.with {
+      border-color: rgba(0, 212, 170, 0.3);
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.08) 0%, var(--bg-card) 100%);
+    }
+
+    .comparison-title {
+      font-size: 1.6em;
+      padding-bottom: 20px;
+      margin-bottom: 25px;
+      border-bottom: 1px solid;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .comparison-box.without .comparison-title {
+      color: #777;
+      border-color: rgba(255, 80, 80, 0.2);
+    }
+
+    .comparison-box.with .comparison-title {
+      color: var(--primary);
+      border-color: rgba(0, 212, 170, 0.3);
+    }
+
+    .comparison-list {
+      list-style: none;
+      line-height: 2.2;
+      font-size: 1.1em;
+    }
+
+    .comparison-box.without .comparison-list li {
+      color: #666;
+    }
+
+    .comparison-box.with .comparison-list li {
+      color: #ffffff;
+    }
+
+    /* Feature Cards */
+    .feature-section {
+      margin: 50px 0;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(0, 212, 170, 0.15);
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 35px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(0, 212, 170, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 60px rgba(0, 212, 170, 0.1);
+    }
+
+    .feature-header {
+      padding: 28px 35px;
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(0, 212, 170, 0.05) 100%);
+      border-bottom: 1px solid rgba(0, 212, 170, 0.15);
+    }
+
+    .feature-header h3 {
+      margin: 0;
+      font-size: 1.5em;
+      color: var(--primary);
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    .feature-content {
+      padding: 35px;
+      color: #ffffff;
+      font-size: 1.1em;
+    }
+
+    .feature-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+
+    .feature-col {
+      flex: 1 1 350px;
+    }
+
+    .feature-list {
+      list-style: none;
+      line-height: 2;
+    }
+
+    .feature-list li {
+      margin-bottom: 10px;
+    }
+
+    .feature-list li::before {
+      content: "◆";
+      color: var(--primary);
+      margin-right: 15px;
+      font-size: 0.8em;
+    }
+
+    .editor-table {
+      margin-top: 30px;
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .editor-item {
+      padding: 18px 25px;
+      border-bottom: 1px solid rgba(0, 212, 170, 0.1);
+      font-weight: 500;
+    }
+
+    .editor-item:last-child {
+      border-bottom: none;
+    }
+
+    .editor-item.main {
+      background: rgba(0, 212, 170, 0.1);
+    }
+
+    .editor-item.sub {
+      background: rgba(0, 0, 0, 0.3);
+      padding-left: 40px;
+    }
+
+    .editor-item span {
+      color: var(--primary);
+      margin-right: 12px;
+    }
+
+    .feature-screenshots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .feature-screenshots img {
+      flex: 1 1 45%;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .feature-screenshots img:hover {
+      border-color: var(--primary);
+      transform: scale(1.02);
+    }
+
+    /* Compatible Section */
+    .compatible-section {
+      background: var(--bg-card);
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      border-radius: 24px;
+      overflow: hidden;
+      margin: 60px 0;
+      backdrop-filter: blur(10px);
+    }
+
+    .compatible-header {
+      padding: 30px;
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+      text-align: center;
+      border-bottom: 1px solid rgba(0, 212, 170, 0.2);
+    }
+
+    .compatible-header h2 {
+      color: #ffffff;
+      font-size: 2em;
+      margin: 0;
+    }
+
+    .compatible-header .blender-version {
+      display: inline-block;
+      background: var(--primary-dark);
+      color: var(--bg-dark);
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-size: 0.9em;
+      font-weight: 600;
+      margin-top: 15px;
+    }
+
+    .compatible-body {
+      padding: 30px;
+    }
+
+    .compatible-title {
+      text-align: center;
+      color: var(--primary);
+      font-size: 1.6em;
+      margin: 20px 0 30px;
+      letter-spacing: 1px;
+    }
+
+    .compatible-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .compatible-item {
+      flex: 1 1 260px;
+      background: rgba(0, 212, 170, 0.05);
+      border: 1px solid rgba(0, 212, 170, 0.15);
+      padding: 14px 22px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      font-size: 1.05em;
+      transition: all 0.3s ease;
+    }
+
+    .compatible-item:hover {
+      background: rgba(0, 212, 170, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .compatible-item::before {
+      content: "✓";
+      color: var(--primary);
+      margin-right: 12px;
+      font-weight: bold;
+    }
+
+    /* Info Grid */
+    .info-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      margin: 50px 0;
+    }
+
+    .info-box {
+      flex: 1 1 280px;
+      background: var(--bg-card);
+      border: 1px solid rgba(0, 212, 170, 0.15);
+      border-radius: 18px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .info-box:hover {
+      border-color: rgba(0, 212, 170, 0.4);
+      transform: translateY(-3px);
+    }
+
+    .info-box h3 {
+      color: var(--primary);
+      font-size: 1.3em;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(0, 212, 170, 0.2);
+      letter-spacing: 1px;
+    }
+
+    .info-list {
+      list-style: none;
+      line-height: 2;
+      font-size: 1.05em;
+    }
+
+    .info-list li::before {
+      content: "◇";
+      color: var(--primary);
+      margin-right: 12px;
+    }
+
+    .info-box.target h3 {
+      color: var(--primary);
+    }
+
+    /* Warning Section */
+    .warning-section {
+      background: rgba(255, 80, 80, 0.08);
+      border: 1px solid rgba(255, 80, 80, 0.25);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 50px 0;
+    }
+
+    .warning-section h3 {
+      color: #ff6b6b;
+      font-size: 1.6em;
+      margin-bottom: 20px;
+    }
+
+    .warning-section p {
+      color: #aaa;
+      font-size: 1.1em;
+      line-height: 1.8;
+      margin-bottom: 18px;
+    }
+
+    .warning-section .highlight {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .not-for-beginners {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 212, 170, 0.1) 100%);
+      border-left: 4px solid var(--primary);
+      padding: 25px;
+      margin-top: 25px;
+      border-radius: 0 12px 12px 0;
+      font-size: 1.2em;
+      color: #ffffff;
+    }
+
+    /* Resources Section */
+    .resources-section {
+      background: var(--bg-card);
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 50px 0;
+      backdrop-filter: blur(10px);
+    }
+
+    .resources-header {
+      padding: 25px;
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+      text-align: center;
+      color: var(--primary);
+      font-size: 1.7em;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .resources-grid {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 30px;
+      justify-content: center;
+      gap: 20px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .resource-link {
+      flex: 1 1 260px;
+      max-width: 300px;
+      background: rgba(0, 212, 170, 0.05);
+      border: 1px solid rgba(0, 212, 170, 0.15);
+      padding: 25px;
+      border-radius: 14px;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .resource-link:hover {
+      background: rgba(0, 212, 170, 0.15);
+      transform: translateY(-5px);
+      border-color: var(--primary);
+    }
+
+    .resource-link h4 {
+      color: #ffffff;
+      font-size: 1.25em;
+      margin-bottom: 10px;
+    }
+
+    .resource-link p {
+      color: var(--primary);
+      font-size: 0.95em;
+    }
+
+    /* Footer CTA */
+    .footer-cta {
+      text-align: center;
+      padding: 60px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .logo { font-size: 3em; }
+      .tagline { font-size: 1.5em; }
+      .hero-desc { font-size: 1.1em; }
+      .section-title { font-size: 2em; }
+      .comparison-box { flex: 1 1 100%; }
+      .feature-grid { flex-direction: column; gap: 20px; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-dark);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-dark);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-wrapper">
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+    </div>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <h1 class="logo">SUPERTABs</h1>
+      <h2 class="tagline">The Ultimate N-Panel Controller</h2>
+      <div class="version-badge">🚀 v1.3.0 — Node Editor Support</div>
+      <p class="hero-desc">
+        SUPERTABs transforms Blender's sidebar from a scattered tool list into a fully controllable workspace system.
+        Designed for workflow convenience and speed, while remaining flexible so you can adapt it to your own style.
+      </p>
+      <p class="hero-subdesc">
+        From remembering locations → to remembering logic. Take back control of your sidebar.
+      </p>
+      <!-- <div class="cta-wrapper">
+        <a href="https://superhivemarket.com/products/supertabs" class="cta-button" target="_blank">
+          Get SUPERTABs Now
+        </a>
+        <span class="price-tag">$16.00 USD</span>
+      </div> -->
+    </div>
+    
+    <hr class="divider">
+    
+    <div class="video-section">
+      <img src="https://assets.superhivemarket.com/cache/a5bd7b8cf893d6f945a059fd74852e9f.png" alt="SUPERTABs Overview">
+    </div>
+    
+    <h2 class="section-title">From <span>Chaos</span> → To <span>Control</span></h2>
+    
+    <div class="comparison">
+      <div class="comparison-box without">
+        <h3 class="comparison-title">WITHOUT SUPERTABs</h3>
+        <ul class="comparison-list">
+          <li>✕ Scattered add-ons everywhere</li>
+          <li>✕ Endless scrolling through tabs</li>
+          <li>✕ Broken workflow & lost time</li>
+          <li>✕ You search more than you use</li>
+        </ul>
+      </div>
+      <div class="comparison-box with">
+        <h3 class="comparison-title">WITH SUPERTABs</h3>
+        <ul class="comparison-list">
+          <li>✓ Structured workspace system</li>
+          <li>✓ One-click instant access</li>
+          <li>✓ Predictable, reliable layout</li>
+          <li>✓ Build muscle memory workflow</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="video-section">
+      <img src="https://assets.superhivemarket.com/cache/f06251e1417ed4019f592d9907f9b9d6.gif" alt="SUPERTABs Demo">
+    </div>
+    
+    <h2 class="section-title">What <span>SUPERTABs</span> Does</h2>
+    
+    <div class="feature-section">
+      <div class="feature-card">
+        <div class="feature-header">
+          <h3>N-PANEL MANAGEMENT</h3>
+        </div>
+        <div class="feature-content">
+          <div class="feature-grid">
+            <div class="feature-col">
+              <ul class="feature-list">
+                <li>Create Unlimited N-Panels (Main Groups)</li>
+                <li>Create Unlimited Tab Groups (Sub Groups)</li>
+                <li>Reorder / Rename / Assign Icons</li>
+                <li>Merge multiple add-ons into one N-Panel</li>
+                <li>Drag & Drop panel organization</li>
+                <li>Custom category naming</li>
+              </ul>
+            </div>
+            <div class="feature-col">
+              <ul class="feature-list">
+                <li>Hide sub-panels inside Add-ons</li>
+                <li>Save configuration as JSON</li>
+                <li>Auto-restore on Blender startup</li>
+                <li>Full editor support (3D, UV, Nodes)</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="editor-table">
+            <div class="editor-item main"><span>◆</span>3D View</div>
+            <div class="editor-item main"><span>◆</span>Image & UV Editor</div>
+            <div class="editor-item main"><span>◆</span>Node Editors</div>
+            <div class="editor-item sub"><span>◇</span>Shader Node Editor</div>
+            <div class="editor-item sub"><span>◇</span>Geometry Node Editor</div>
+            <div class="editor-item sub"><span>◇</span>Texture Node Editor</div>
+            <div class="editor-item sub"><span>◇</span>Compositor Node Editor</div>
+          </div>
+          
+          <div class="feature-screenshots">
+            <img src="https://assets.superhivemarket.com/cache/c95a5b987c4deac35c1d8bfb10ae82bc.gif" alt="N-Panel Demo">
+            <img src="https://assets.superhivemarket.com/cache/0a43f39ec5d13ad1975058bb2e1f4bc0.gif" alt="N-Panel Demo 2">
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-header">
+          <h3>WORKFLOW ACCELERATION</h3>
+        </div>
+        <div class="feature-content">
+          <div class="feature-grid">
+            <div class="feature-col">
+              <ul class="feature-list">
+                <li>Quick Shortcuts & Favorite Tab Presets</li>
+                <li>Pie Menu / Right-Click Access</li>
+                <li><strong>Global Search</strong> - Find any tab instantly</li>
+                <li>Keyboard-driven navigation</li>
+                <li>One-click preset switching</li>
+              </ul>
+            </div>
+            <div class="feature-col">
+              <ul class="feature-list">
+                <li>Focus Mode (Left Click) - Single tab view</li>
+                <li>Stack Mode (Shift + Click) - Multi-tab stacking</li>
+                <li>Favorite items management</li>
+                <li>Quick access from any editor</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="feature-screenshots">
+            <img src="https://assets.superhivemarket.com/cache/46b92c9431b20a38e123d011c6102fde.gif" alt="Workflow Demo">
+            <img src="https://assets.superhivemarket.com/cache/f0845beedeff8184c059c0f5cf38151b.gif" alt="Workflow Demo 2">
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-header">
+          <h3>PINNING & EJECT SYSTEM</h3>
+        </div>
+        <div class="feature-content">
+          <div class="feature-grid">
+            <div class="feature-col">
+              <ul class="feature-list">
+                <li>Pin individual items for quick access</li>
+                <li>Pin All Favorites - One-click favorite pinning</li>
+                <li>Stack multiple pinned items together</li>
+                <li>Unpin specific preset items</li>
+                <li>Unpin All / Unpin Everything</li>
+              </ul>
+            </div>
+            <div class="feature-col">
+              <ul class="feature-list">
+                <li><strong>Eject Item</strong> - Temporarily remove from group</li>
+                <li><strong>Eject Subgroup</strong> - Move entire subgroup out</li>
+                <li>Regroup items - Restore to original group</li>
+                <li>Persistent across Blender sessions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-header">
+          <h3>VISIBILITY CONTROLS</h3>
+        </div>
+        <div class="feature-content">
+          <div class="feature-grid">
+            <div class="feature-col">
+              <ul class="feature-list">
+                <li>Hide unused UI elements</li>
+                <li>Toggle item visibility on/off</li>
+                <li>Hide entire subgroups</li>
+                <li>Restore hidden items instantly</li>
+              </ul>
+            </div>
+            <div class="feature-col">
+              <ul class="feature-list">
+                <li>Create structured sidebars</li>
+                <li>Clean workspace design</li>
+                <li>Multi-editor architecture control</li>
+                <li>Per-area visibility states</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-header">
+          <h3>OPERATIONS CENTER</h3>
+        </div>
+        <div class="feature-content">
+          <ul class="feature-list">
+            <li><strong style="color:#00d4aa;">3D View:</strong> Statistics Overlay, Face Orientation, Viewport Overlay, Lock Camera</li>
+            <li><strong style="color:#00d4aa;">UV Editor:</strong> UV Stretch, UV Sync, Average UV, Pack UV</li>
+            <li><strong style="color:#00d4aa;">Node Editors:</strong> Node Statistics, Arrange Nodes, Collapse Unused Sockets</li>
+            <li><strong style="color:#00d4aa;">Image Editor:</strong> Resize, Replace, Save All Image Modified</li>
+          </ul>
+          
+          <div class="feature-screenshots">
+            <img src="https://assets.superhivemarket.com/cache/f1af524e34ac06d79611b3162b13414e.gif" alt="Operations Demo">
+            <img src="https://assets.superhivemarket.com/cache/aee9c81305fdf2731be99e401995ed72.gif" alt="Operations Demo 2">
+            <img src="https://assets.superhivemarket.com/cache/cc5ee1e5f4140a0118971766186ec9ad.gif" alt="Operations Demo 3">
+            <img src="https://assets.superhivemarket.com/cache/92df16635e945736e593b394003c0045.gif" alt="Operations Demo 4">
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-header">
+          <h3>ADD-ONS HUB MANAGEMENT</h3>
+        </div>
+        <div class="feature-content">
+          <div class="feature-grid">
+            <div class="feature-col">
+              <ul class="feature-list">
+                <li>View Installed Add-ons</li>
+                <li>Enabled / Disabled state tracking</li>
+                <li>Favorite Add-ons & Presets</li>
+                <li>One-click enable/disable presets</li>
+              </ul>
+            </div>
+            <div class="feature-col">
+              <ul class="feature-list">
+                <li>Export Add-on state to JSON</li>
+                <li>Backup & Recovery with states</li>
+                <li>Restore setup across machines</li>
+                <li>Batch enable/disable operations</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="feature-screenshots">
+            <img src="https://assets.superhivemarket.com/cache/3218fda2243dbaba64f76f3ebcbc47e2.gif" alt="Add-ons Hub">
+            <img src="https://assets.superhivemarket.com/cache/919c3a725ed64d7b7803e474be2b275b.gif" alt="Add-ons Hub 2">
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-header">
+          <h3>IMPORT / EXPORT & BACKUP</h3>
+        </div>
+        <div class="feature-content">
+          <div class="feature-grid">
+            <div class="feature-col">
+              <ul class="feature-list">
+                <li>Export full configuration to JSON</li>
+                <li>Import existing configurations</li>
+                <li>Save panel expansion states</li>
+                <li>Save pinned items & favorites</li>
+              </ul>
+            </div>
+            <div class="feature-col">
+              <ul class="feature-list">
+                <li>Share workspace setups with team</li>
+                <li>Restore across multiple machines</li>
+                <li>Backup on exit option</li>
+                <li>Auto-restore on startup</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="compatible-section">
+      <div class="compatible-header">
+        <h2>SUPERTABs v1.3.0 — Compatible Add-ons</h2>
+        <span class="blender-version">Tested on Blender 4.5 - 5.0</span>
+      </div>
+      <div class="compatible-body">
+        <h3 class="compatible-title">Popular & Top Sellers</h3>
+        <div class="compatible-grid">
+          <div class="compatible-item">Vertex Group Plus</div>
+          <div class="compatible-item">Action Commander</div>
+          <div class="compatible-item">UVPackmaster 4</div>
+          <div class="compatible-item">Engon | Polygoniq</div>
+          <div class="compatible-item">GScatter</div>
+          <div class="compatible-item">Zen UV</div>
+          <div class="compatible-item">PSA Atmosphere</div>
+          <div class="compatible-item">KitOPS</div>
+          <div class="compatible-item">BoxCutter</div>
+          <div class="compatible-item">Fluent</div>
+          <div class="compatible-item">True SKY 3</div>
+          <div class="compatible-item">RenderRaw</div>
+          <div class="compatible-item">Retopoflow 4</div>
+          <div class="compatible-item">BlenderKit</div>
+          <div class="compatible-item">Poliigon</div>
+          <div class="compatible-item">Poly Haven</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="info-grid">
+      <div class="info-box">
+        <h3>COMPATIBILITY</h3>
+        <ul class="info-list">
+          <li>Blender 4.5 - 5.0</li>
+          <li>Tested on Windows</li>
+          <li>Non-destructive</li>
+          <li>No core file modifications</li>
+          <li>Fully reversible</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h3>PERFORMANCE</h3>
+        <ul class="info-list">
+          <li>Zero performance impact</li>
+          <li>Non-destructive system</li>
+          <li>Works without breaking add-ons</li>
+          <li>Safe to disable anytime</li>
+        </ul>
+      </div>
+      <div class="info-box target">
+        <h3>WHO IS IT FOR?</h3>
+        <ul class="info-list">
+          <li>Power Users</li>
+          <li>Studio Pipeline Setup</li>
+          <li>Add-on collectors</li>
+          <li>Freelance 3D artists</li>
+          <li>Game development studios</li>
+          <li>VFX professionals</li>
+        </ul>
+      </div>
+      <div class="info-box target">
+        <h3>FOR TEAMS</h3>
+        <ul class="info-list">
+          <li>Standardize UI across team</li>
+          <li>Share JSON configuration</li>
+          <li>Instant workspace restore</li>
+          <li>Structured production environment</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="warning-section">
+      <h3>⚠️ Important Notes</h3>
+      <p>
+        Some add-ons may have their own N-Panel management system, which can prevent <span class="highlight">SUPERTABs</span> from fully controlling it.
+        Contact me for compatibility issues.
+      </p>
+      <p>
+        <strong>Warning:</strong> You can't use SUPERTABs together with another N-Panel manager. It will cause conflicts.
+        It's best to stick with one add-on to handle your N-Panel architecture.
+      </p>
+      <div class="not-for-beginners">
+        ⚡ SUPERTABs is NOT for beginners who only use 3-5 add-ons.
+      </div>
+    </div>
+    
+    <div class="resources-section">
+      <div class="resources-header">RESOURCES & COMMUNITY</div>
+      <div class="resources-grid">
+        <a href="https://www.notion.so/SUPERTABs-Released-Notes-2b8b1f0a83538066909dc0d027197ff6" target="_blank" class="resource-link">
+          <h4>Release Log</h4>
+          <p>Check version history & updates</p>
+        </a>
+        <a href="https://www.notion.so/SUPERTABs-Documents-ENG-270b1f0a83538079852bc0077fd71c24" target="_blank" class="resource-link">
+          <h4>Documents / Guides</h4>
+          <p>Tutorials and documentation</p>
+        </a>
+        <a href="https://discord.com/channels/1434525694947495938/1434530399396036689" target="_blank" class="resource-link">
+          <h4>Discord</h4>
+          <p>Join the community for support</p>
+        </a>
+      </div>
+    </div>
+    
+    <!-- <div class="footer-cta">
+      <a href="https://superhivemarket.com/products/supertabs" class="cta-button" target="_blank">
+        Get SUPERTABs Now — $16.00
+      </a>
+    </div> -->
+  </div>
+</body>
+</html>
